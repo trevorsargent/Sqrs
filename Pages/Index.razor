@@ -1,0 +1,57 @@
+﻿@page "/"
+
+@using Sqrs.Data
+@inject SquareService Service
+
+<PageTitle>Sqrs</PageTitle>
+
+<div class="main">
+
+
+    <div class="square bound" @onclick="AddSquare">
+
+        @foreach (var square in squares)
+        {
+            if (square != null)
+            {
+
+                <div class="square tile" style="--col: @square.Col; --row: @square.Row; --size: @square.Size"
+            @onclick:stopPropagation="true">
+                    Col: @square.Col, Row: @square.Row, ID: @square.Id
+                </div>
+            }
+
+        }
+    </div>
+</div>
+
+@code {
+
+    private Square[] squares = new Square[0];
+
+    private void AddSquare()
+    {
+
+        Service.AddSquare();
+    }
+
+    private async void SquaresUpdated(object? sender, Square[] update)
+    {
+
+        await InvokeAsync(() =>
+        {
+            squares = update;
+            StateHasChanged();
+        });
+    }
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        squares = Service.GetSquares();
+
+        Service.SquareUpdate += SquaresUpdated;
+    }
+}
