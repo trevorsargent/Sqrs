@@ -41,4 +41,15 @@ public class Square
     {
         return $"s{Size}";
     }
+
+    public void Shift(int r, int c)
+    {
+        Col += c;
+        Row += r;
+    }
+
+    public string SelectedClasses(int selected)
+    {
+        return selected == Id ? "selected" : "";
+    }
 }

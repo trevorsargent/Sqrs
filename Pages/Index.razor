@@ -5,7 +5,10 @@
 
 <PageTitle>Sqrs</PageTitle>
 
-<div class="main">
+<div class="main" 
+    @onkeydown="KeyDown"
+    tabindex="0"
+>
 
 
     <div class="square bound" @onclick="AddSquare">
@@ -15,13 +18,11 @@
             if (square != null)
             {
 
-                <div class="tile square" 
+                <div class="tile square @square.SelectedClasses(SelectedId)" 
                     style="--col: @square.Col; --row: @square.Row; --size: @square.Size" 
-
                     @onclick:stopPropagation="true" 
-                    @onclick="() => Grow(square.Id)"
-                    @oncontextmenu:preventDefault="true"
-                    @oncontextmenu="() => Shrink(square.Id)"
+                    @onclick="() => Select(square.Id)"
+                    @key=@square.Id
                     >
                 </div>
             }
@@ -35,14 +36,33 @@
 
     private Square[] squares = new Square[0];
 
+    private int SelectedId = 0;
+
     private void AddSquare()
     {
 
         Service.AddSquare();
     }
 
-    private void Grow(int id){
-        Service.GrowSquare(id);
+    private void Select(int id){
+        SelectedId = id;
+    }
+
+    private void KeyDown(KeyboardEventArgs e){
+        switch(e.Key){
+            case "a": 
+                Service.ShiftSquare(SelectedId, 0, -1);
+            break;
+            case "d": 
+                Service.ShiftSquare(SelectedId, 0, 1);
+            break;
+            case "w":
+                Service.ShiftSquare(SelectedId, -1, 0);
+            break;
+            case "s": 
+                Service.ShiftSquare(SelectedId, 1, 0);
+            break;
+        }
     }
 
     private void Shrink(int id)
@@ -59,6 +79,8 @@
             StateHasChanged();
         });
     }
+
+
 
 
     protected override void OnInitialized()

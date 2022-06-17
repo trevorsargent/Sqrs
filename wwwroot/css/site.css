@@ -15,23 +15,26 @@
     align-items: center;
     height: 100vh;
     width: 100vw;
-
 }
 
 .tile {
     position: absolute;
     transform: translateY(calc(var(--row) * var(--pix))) translateX(calc(var(--col) * var(--pix)));
     width: calc(var(--size) * var(--pix));
-    transition: all .5s;
-
+    transition: all .1s;
     background-color: hsl(calc(360 * var(--size) / 16.0), 100%, 80%);
+    box-sizing: border-box;
 }
 
-
+.tile.selected {
+    border: 3px solid hsl(calc(360 * var(--size) / 16.0), 100%, 60%);
+}
 
 .bound {
     width: 640px;
-    border: 1px solid lightgray;
+    border: 3px solid lightgray;
+    box-sizing: content-box;
+
 }
 
 #blazor-error-ui {

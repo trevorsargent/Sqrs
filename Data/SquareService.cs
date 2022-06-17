@@ -4,13 +4,18 @@ public class SquareService
 {
 
     const int SIZE = 16;
-    private int[,] board = new int[SIZE, SIZE];
+    private readonly int[,] board = new int[SIZE, SIZE];
 
-    Random r;
+    private readonly Random r;
+    private readonly Dictionary<int, Square> squares;
+
+    private int IdCount = 0;
 
     public SquareService()
     {
         r = new Random();
+        squares = new Dictionary<int, Square>();
+
         for (int c = 0; c < SIZE; c++)
         {
             for (int r = 0; r < SIZE; r++)
@@ -20,7 +25,6 @@ public class SquareService
         }
     }
 
-    private Dictionary<int, Square> squares = new Dictionary<int, Square>();
 
 
     public Square[] GetSquares()
@@ -28,7 +32,7 @@ public class SquareService
         return squares.Values.ToArray();
     }
 
-    private void writeToBoard(Square s)
+    private void WriteToBoard(Square s)
     {
         for (int col = s.Col; col < s.Col + s.Size; col++)
         {
@@ -40,7 +44,7 @@ public class SquareService
 
     }
 
-    private void removeFromBoard(Square s)
+    private void RemoveFromBoard(Square s)
     {
         for (int col = s.Col; col < s.Col + s.Size; col++)
         {
@@ -79,16 +83,17 @@ public class SquareService
         Square s;
         do
         {
-            s = new Square(squares.Count, r.Next(SIZE), r.Next(SIZE));
+            s = new Square(IdCount, r.Next(SIZE), r.Next(SIZE));
         } while (OverlapsAny(s));
         SetSquare(s);
         Publish();
+        IdCount++;
     }
 
     public void GrowSquare(int id)
     {
         Square s = squares[id];
-        removeFromBoard(s);
+        RemoveFromBoard(s);
 
         s.Grow();
 
@@ -97,16 +102,89 @@ public class SquareService
             s.Shrink();
         }
 
-        writeToBoard(s);
+        WriteToBoard(s);
+        Publish();
 
+    }
+
+    public void CombineWinners()
+    {
+
+        for (int r = 0; r < SIZE; r++)
+        {
+            for (int c = 0; c < SIZE; c++)
+            {
+                if (board[r, c] < 0)
+                {
+                    continue;
+                }
+
+                Square s = squares[board[r, c]];
+
+                if (s.Col + s.Size >= SIZE || s.Row + s.Size >= SIZE)
+                {
+                    continue;
+                }
+
+                int rightId = board[s.Row, s.Col + s.Size];
+                int downId = board[s.Row + s.Size, s.Col];
+                int diagId = board[s.Row + s.Size, s.Col + s.Size];
+
+                if (rightId < 0 || downId < 0 || diagId < 0)
+                {
+                    continue;
+                }
+
+                Square rightSquare = squares[rightId];
+                Square downSquare = squares[downId];
+                Square diagSquare = squares[diagId];
+
+                if (rightSquare.Size != s.Size || downSquare.Size != s.Size || diagSquare.Size != s.Size)
+                {
+                    continue;
+                }
+
+                RemoveFromBoard(rightSquare);
+                RemoveFromBoard(downSquare);
+                RemoveFromBoard(diagSquare);
+
+                squares.Remove(rightId);
+                squares.Remove(downId);
+                squares.Remove(diagId);
+
+                GrowSquare(s.Id);
+
+            }
+        }
     }
 
     public void ShrinkSquare(int id)
     {
         Square s = squares[id];
-        removeFromBoard(s);
+        RemoveFromBoard(s);
         s.Shrink();
-        writeToBoard(s);
+        WriteToBoard(s);
+        Publish();
+    }
+
+
+    public async void ShiftSquare(int id, int r, int c)
+    {
+        Square s = squares[id];
+
+        RemoveFromBoard(s);
+        s.Shift(r, c);
+
+        if (!IsInBounds(s) || OverlapsAny(s))
+        {
+            s.Shift(r * -1, c * -1);
+        }
+
+        WriteToBoard(s);
+        Publish();
+
+        CombineWinners();
+
     }
     public void Publish()
     {
@@ -116,7 +194,7 @@ public class SquareService
     public void SetSquare(Square square)
     {
         squares.Add(square.Id, square);
-        writeToBoard(square);
+        WriteToBoard(square);
     }
 
     public bool HasRoomForSize(int size)
