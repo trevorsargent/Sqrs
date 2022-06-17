@@ -46,7 +46,6 @@ public class SquareService
         {
             for (int row = s.Row; row < s.Row + s.Size; row++)
             {
-                Console.WriteLine($"({row},{col}");
                 board[row, col] = -1;
             }
         }
@@ -96,11 +95,18 @@ public class SquareService
         if (!IsInBounds(s) || OverlapsAny(s))
         {
             s.Shrink();
-            s.Shrink();
         }
 
         writeToBoard(s);
 
+    }
+
+    public void ShrinkSquare(int id)
+    {
+        Square s = squares[id];
+        removeFromBoard(s);
+        s.Shrink();
+        writeToBoard(s);
     }
     public void Publish()
     {

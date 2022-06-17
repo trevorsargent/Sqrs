@@ -19,7 +19,10 @@
                     style="--col: @square.Col; --row: @square.Row; --size: @square.Size" 
 
                     @onclick:stopPropagation="true" 
-                    @onclick="() => Grow(square.Id)">
+                    @onclick="() => Grow(square.Id)"
+                    @oncontextmenu:preventDefault="true"
+                    @oncontextmenu="() => Shrink(square.Id)"
+                    >
                 </div>
             }
 
@@ -40,6 +43,11 @@
 
     private void Grow(int id){
         Service.GrowSquare(id);
+    }
+
+    private void Shrink(int id)
+    {
+        Service.ShrinkSquare(id);
     }
 
     private async void SquaresUpdated(object? sender, Square[] update)
