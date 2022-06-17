@@ -19,10 +19,12 @@
 
 .tile {
     position: absolute;
-    transform: translateY(calc(var(--row) * var(--pix))) translateX(calc(var(--col) * var(--pix)));
-    width: calc(var(--size) * var(--pix));
+    transform: translateY(calc(var(--row) * var(--pix) + 2px)) translateX(calc(var(--col) * var(--pix) + 2px));
+    width: calc(var(--size) * var(--pix) - 2px) ;
     transition: all .1s;
     background-color: hsl(calc(360 * var(--size) / 16.0), 100%, 80%);
+    border: 0 solid hsl(calc(360 * var(--size) / 16.0), 100%, 60%);
+    
     box-sizing: border-box;
 }
 
@@ -31,7 +33,7 @@
 }
 
 .bound {
-    width: 640px;
+    width: 642px;
     border: 3px solid lightgray;
     box-sizing: content-box;
 
