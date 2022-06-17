@@ -92,7 +92,12 @@ public class SquareService
 
     public void GrowSquare(int id)
     {
+        if (!squares.ContainsKey(id))
+        {
+            return;
+        }
         Square s = squares[id];
+
         RemoveFromBoard(s);
 
         s.Grow();
@@ -160,6 +165,10 @@ public class SquareService
 
     public void ShrinkSquare(int id)
     {
+        if (!squares.ContainsKey(id))
+        {
+            return;
+        }
         Square s = squares[id];
         RemoveFromBoard(s);
         s.Shrink();
@@ -168,10 +177,13 @@ public class SquareService
     }
 
 
-    public async void ShiftSquare(int id, int r, int c)
+    public void ShiftSquare(int id, int r, int c)
     {
+        if (!squares.ContainsKey(id))
+        {
+            return;
+        }
         Square s = squares[id];
-
         RemoveFromBoard(s);
         s.Shift(r, c);
 
