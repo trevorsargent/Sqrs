@@ -24,8 +24,21 @@ public class Square
         return $"ID: {Id} - Row: {Row} - Col: {Col}";
     }
 
-    
+    public void Grow()
+    {
+        Size++;
+    }
 
+    public void Shrink()
+    {
+        if (Size > 1)
+        {
+            Size--;
+        }
+    }
 
-
+    public string SizeClass()
+    {
+        return $"s{Size}";
+    }
 }

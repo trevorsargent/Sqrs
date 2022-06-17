@@ -1,6 +1,8 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
-
+:root{
+    --pix: 40px;
+}
 
 .square {
     aspect-ratio: 1;
@@ -17,11 +19,15 @@
 }
 
 .tile {
-    background-color: blue;
     position: absolute;
-    transform: translateY(calc(var(--row) * 80px)) translateX(calc(var(--col) * 80px));
-    width: calc(var(--size) * 80px);
+    transform: translateY(calc(var(--row) * var(--pix))) translateX(calc(var(--col) * var(--pix)));
+    width: calc(var(--size) * var(--pix));
+    transition: all .5s;
+
+    background-color: hsl(calc(360 * var(--size) / 16.0), 100%, 80%);
 }
+
+
 
 .bound {
     width: 640px;

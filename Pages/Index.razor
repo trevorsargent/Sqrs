@@ -15,15 +15,18 @@
             if (square != null)
             {
 
-                <div class="square tile" style="--col: @square.Col; --row: @square.Row; --size: @square.Size"
-            @onclick:stopPropagation="true">
-                    Col: @square.Col, Row: @square.Row, ID: @square.Id
+                <div class="tile square" 
+                    style="--col: @square.Col; --row: @square.Row; --size: @square.Size" 
+
+                    @onclick:stopPropagation="true" 
+                    @onclick="() => Grow(square.Id)">
                 </div>
             }
 
         }
     </div>
 </div>
+
 
 @code {
 
@@ -33,6 +36,10 @@
     {
 
         Service.AddSquare();
+    }
+
+    private void Grow(int id){
+        Service.GrowSquare(id);
     }
 
     private async void SquaresUpdated(object? sender, Square[] update)

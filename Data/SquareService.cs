@@ -3,7 +3,7 @@ namespace Sqrs.Data;
 public class SquareService
 {
 
-    const int SIZE = 8;
+    const int SIZE = 16;
     private int[,] board = new int[SIZE, SIZE];
 
     Random r;
@@ -20,7 +20,7 @@ public class SquareService
         }
     }
 
-    private  Dictionary<int, Square> squares = new Dictionary<int, Square>();
+    private Dictionary<int, Square> squares = new Dictionary<int, Square>();
 
 
     public Square[] GetSquares()
@@ -46,6 +46,7 @@ public class SquareService
         {
             for (int row = s.Row; row < s.Row + s.Size; row++)
             {
+                Console.WriteLine($"({row},{col}");
                 board[row, col] = -1;
             }
         }
@@ -57,10 +58,8 @@ public class SquareService
         {
             for (int row = s.Row; row < s.Row + s.Size; row++)
             {
-                Console.WriteLine($"checking R:{row} C: {col}");
-                if (board[row, col] > -1)
+                if (board[row, col] > -1 && board[row, col] != s.Id)
                 {
-                    Console.WriteLine($"Collision at {row},{col}");
                     return true;
                 }
             }
@@ -73,7 +72,8 @@ public class SquareService
     public void AddSquare()
     {
 
-        if(!HasRoomForSize(1)){
+        if (!HasRoomForSize(1))
+        {
             Console.WriteLine("NO ROOM!");
             return;
         }
@@ -86,12 +86,25 @@ public class SquareService
         Publish();
     }
 
-    public void GrowSquare(int id){
+    public void GrowSquare(int id)
+    {
+        Square s = squares[id];
+        removeFromBoard(s);
+
+        s.Grow();
+
+        if (!IsInBounds(s) || OverlapsAny(s))
+        {
+            s.Shrink();
+            s.Shrink();
+        }
+
+        writeToBoard(s);
 
     }
-
-    public void Publish(){
-            SquareUpdate?.Invoke(this, squares.Values.ToArray());
+    public void Publish()
+    {
+        SquareUpdate?.Invoke(this, squares.Values.ToArray());
     }
 
     public void SetSquare(Square square)
@@ -100,14 +113,21 @@ public class SquareService
         writeToBoard(square);
     }
 
-    public bool HasRoomForSize(int size){
-        for(int r = 0; r < SIZE; r++){
-            for(int c = 0; c < SIZE; c++){
-                if(board[r, c] < 0){
+    public bool HasRoomForSize(int size)
+    {
+        for (int r = 0; r < SIZE; r++)
+        {
+            for (int c = 0; c < SIZE; c++)
+            {
+                if (board[r, c] < 0)
+                {
 
-                    for(int rr = r; rr < r + size; rr ++){
-                        for(int cc = c; cc < c + size; cc++){
-                            if(board[rr, cc] > -1){
+                    for (int rr = r; rr < r + size; rr++)
+                    {
+                        for (int cc = c; cc < c + size; cc++)
+                        {
+                            if (board[rr, cc] > -1)
+                            {
                                 return false;
                             }
                         }
@@ -117,6 +137,11 @@ public class SquareService
             }
         }
         return false;
+    }
+
+    public bool IsInBounds(Square s)
+    {
+        return s.Col >= 0 && s.Col + s.Size <= SIZE && s.Row >= 0 && s.Row + s.Size <= SIZE;
     }
 
     public event EventHandler<Square[]>? SquareUpdate;
