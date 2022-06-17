@@ -112,8 +112,9 @@ public class SquareService
 
     }
 
-    public void CombineWinners()
+    public bool Combine()
     {
+        bool foundCombine = false;
 
         for (int r = 0; r < SIZE; r++)
         {
@@ -158,9 +159,12 @@ public class SquareService
                 squares.Remove(diagId);
 
                 GrowSquare(s.Id);
+                foundCombine = true;
 
             }
         }
+
+        return foundCombine;
     }
 
     public void ShrinkSquare(int id)
@@ -194,8 +198,7 @@ public class SquareService
 
         WriteToBoard(s);
         Publish();
-
-        CombineWinners();
+        while (Combine()) { };
 
     }
     public void Publish()
