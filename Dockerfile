@@ -1,4 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+LABEL org.opencontainers.image.source "https://github.com/trevorsargent/Sqrs"
+
 WORKDIR /app
 
 # Copy everything
